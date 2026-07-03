@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Vitrina Comercial Cartagena gestiona campañas en Meta Ads para vender o arrendar negocios, locales y propiedades. Interesados reales por WhatsApp.",
       },
-      { property: "og:title", content: "VCC — Pauta digital para vender o arrendar en Cartagena" },
+      { property: "og:title", content: "VCC — Vende o arrienda más rápido con pauta digital en Cartagena" },
       {
         property: "og:description",
         content:
@@ -91,6 +91,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "VCC — Vende o arrienda más rápido con pauta digital en Cartagena" },
+      { name: "description", content: "Vitrina Comercial Cartagena gestiona campañas en Meta Ads para vender o arrendar negocios, locales y propiedades. Interesados reales por WhatsApp." },
+      { property: "og:description", content: "Vitrina Comercial Cartagena gestiona campañas en Meta Ads para vender o arrendar negocios, locales y propiedades. Interesados reales por WhatsApp." },
+      { name: "twitter:description", content: "Vitrina Comercial Cartagena gestiona campañas en Meta Ads para vender o arrendar negocios, locales y propiedades. Interesados reales por WhatsApp." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca4bcb3b-7a37-4503-a465-a5d417667749/id-preview-8de99650--5d6bbe8e-ae37-4934-a26d-77f9d4e75358.lovable.app-1783115454628.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca4bcb3b-7a37-4503-a465-a5d417667749/id-preview-8de99650--5d6bbe8e-ae37-4934-a26d-77f9d4e75358.lovable.app-1783115454628.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
