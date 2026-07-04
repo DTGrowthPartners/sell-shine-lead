@@ -30,6 +30,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import heroImg from "@/assets/cartagena-hero.jpg";
+import ctgCalle from "@/assets/ctg-calle.webp";
+import ctgLocal from "@/assets/ctg-local.webp";
+import ctgInterior from "@/assets/ctg-interior.webp";
+import ctgAzotea from "@/assets/ctg-azotea.webp";
 import caso1 from "@/assets/caso-abarrotes-1.webp";
 import caso2 from "@/assets/caso-abarrotes-2.webp";
 import caso3 from "@/assets/caso-abarrotes-3.webp";
@@ -48,7 +52,7 @@ export const Route = createFileRoute("/")({
 });
 
 /* ---------------------------------------------------------------- */
-/* Video de fondo con loop manual y fundido suave (fade in/out)      */
+/* Video de fondo con loop manual y fundido suave                    */
 /* ---------------------------------------------------------------- */
 function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -97,7 +101,6 @@ function HeroVideo() {
 
   return (
     <div className="absolute inset-0" aria-hidden>
-      {/* Imagen base: siempre visible detrás; sirve de póster y de fallback */}
       <img
         src={heroImg}
         alt=""
@@ -118,8 +121,34 @@ function HeroVideo() {
           onError={() => setFailed(true)}
         />
       )}
-      {/* Velo para legibilidad del texto sobre el video */}
-      <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/90 via-forest-deep/25 to-forest-deep/45" />
+      {/* Velo cálido para legibilidad */}
+      <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/95 via-forest-deep/30 to-forest-deep/50" />
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* Etiqueta editorial pequeña con línea de latón                     */
+/* ---------------------------------------------------------------- */
+function Eyebrow({
+  children,
+  dark,
+  center,
+}: {
+  children: ReactNode;
+  dark?: boolean;
+  center?: boolean;
+}) {
+  const line = dark ? "bg-brass-soft/60" : "bg-brass";
+  return (
+    <div
+      className={`flex items-center gap-3 text-[11px] uppercase tracking-[0.15em] ${
+        dark ? "text-brass-soft" : "text-charcoal/55"
+      } ${center ? "justify-center" : ""}`}
+    >
+      <span className={`h-px w-8 ${line}`} />
+      {children}
+      {center && <span className={`h-px w-8 ${line}`} />}
     </div>
   );
 }
@@ -127,10 +156,14 @@ function HeroVideo() {
 /* ---------------------------------------------------------------- */
 /* Titular con entrada letra por letra                               */
 /* ---------------------------------------------------------------- */
-function AnimatedHeading({ lines }: { lines: { text: string; muted?: boolean }[] }) {
+function AnimatedHeading({
+  lines,
+}: {
+  lines: { text: string; muted?: boolean }[];
+}) {
   return (
     <h1
-      className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.08] tracking-[-0.03em] text-ivory"
+      className="font-display font-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.02] tracking-[-0.02em] text-ivory"
       style={{ textWrap: "balance" }}
     >
       {lines.map((line, li) => (
@@ -139,11 +172,14 @@ function AnimatedHeading({ lines }: { lines: { text: string; muted?: boolean }[]
             <span
               key={wi}
               className={`inline-block whitespace-nowrap mr-[0.24em] ${
-                line.muted ? "text-brass-soft" : ""
+                line.muted ? "italic text-brass-soft" : ""
               }`}
             >
               {word.split("").map((ch, ci) => (
-                <span key={ci} className="hero-char inline-block will-change-transform">
+                <span
+                  key={ci}
+                  className="hero-char inline-block will-change-transform"
+                >
                   {ch}
                 </span>
               ))}
@@ -178,67 +214,66 @@ function LandingPage() {
     const ctx = gsap.context(() => {
       if (prefersReduced) return;
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.from(".nav-item", { y: -14, opacity: 0, stagger: 0.05, duration: 0.7 })
-        .from(
-          ".hero-badge",
-          { y: 14, opacity: 0, duration: 0.7 },
-          "-=0.4",
-        )
+      // Entrada del hero: lenta y contenida
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+      tl.from(".nav-item", { y: -10, opacity: 0, stagger: 0.06, duration: 0.9 })
+        .from(".hero-badge", { y: 12, opacity: 0, duration: 0.9 }, "-=0.5")
         .from(
           ".hero-char",
-          { x: -18, opacity: 0, stagger: 0.018, duration: 0.5 },
-          "-=0.4",
+          { x: -14, opacity: 0, stagger: 0.02, duration: 0.7 },
+          "-=0.5",
         )
-        .from(".hero-sub", { y: 16, opacity: 0, duration: 0.8 }, "-=0.5")
-        .from(".hero-cta", { y: 16, opacity: 0, stagger: 0.1, duration: 0.7 }, "-=0.5")
-        .from(".hero-tag", { y: 16, opacity: 0, duration: 0.8 }, "-=0.5")
-        .from(".hero-scroll", { opacity: 0, duration: 0.8 }, "-=0.3");
+        .from(".hero-sub", { y: 18, opacity: 0, duration: 1 }, "-=0.5")
+        .from(
+          ".hero-cta",
+          { y: 18, opacity: 0, stagger: 0.12, duration: 0.9 },
+          "-=0.6",
+        )
+        .from(".hero-tag", { y: 18, opacity: 0, duration: 1 }, "-=0.6")
+        .from(".hero-meta", { opacity: 0, duration: 1 }, "-=0.4");
 
-      // Revelado genérico al hacer scroll (trigger por elemento + once
-      // para que nada quede oculto si el layout cambia al cargar imágenes)
+      // Revelado al hacer scroll: fade + leve subida, easing suave
       gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) => {
         gsap.from(el, {
-          y: 34,
+          y: 26,
           opacity: 0,
-          duration: 0.9,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 90%", once: true },
+          duration: 1.15,
+          ease: "power2.out",
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
         });
       });
 
       gsap.utils.toArray<HTMLElement>(".step-card").forEach((el, i) => {
         gsap.from(el, {
-          y: 40,
+          y: 28,
           opacity: 0,
-          duration: 0.9,
-          delay: (i % 4) * 0.08,
-          ease: "power3.out",
+          duration: 1.1,
+          delay: (i % 4) * 0.1,
+          ease: "power2.out",
           scrollTrigger: { trigger: el, start: "top 92%", once: true },
         });
       });
 
       gsap.utils.toArray<HTMLElement>(".preview-card").forEach((el, i) => {
         gsap.from(el, {
-          y: 44,
+          y: 30,
           opacity: 0,
-          duration: 0.9,
+          duration: 1.1,
           delay: (i % 3) * 0.12,
-          ease: "power3.out",
+          ease: "power2.out",
           scrollTrigger: { trigger: el, start: "top 92%", once: true },
         });
       });
 
       gsap.from(".float", {
-        y: 26,
+        y: 20,
         opacity: 0,
-        stagger: 0.12,
-        duration: 0.8,
-        ease: "power3.out",
+        stagger: 0.15,
+        duration: 1,
+        ease: "power2.out",
         scrollTrigger: { trigger: ".stage", start: "top 80%", once: true },
       });
 
-      // Parallax sutil en la imagen del showcase
       gsap.to(".stage-media", {
         yPercent: -6,
         ease: "none",
@@ -251,18 +286,15 @@ function LandingPage() {
       });
 
       gsap.from(".cta-word", {
-        y: 30,
+        y: 26,
         opacity: 0,
-        stagger: 0.06,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: { trigger: ".cta-block", start: "top 75%" },
+        stagger: 0.05,
+        duration: 1,
+        ease: "power2.out",
+        scrollTrigger: { trigger: ".cta-block", start: "top 78%", once: true },
       });
     }, root);
 
-    // Recalcular posiciones de ScrollTrigger cuando terminan de cargar
-    // las imágenes/video (el alto de la página cambia y los triggers
-    // quedan desfasados si no se refresca)
     const refresh = () => ScrollTrigger.refresh();
     if (document.readyState === "complete") {
       refresh();
@@ -282,64 +314,64 @@ function LandingPage() {
       className="min-h-screen bg-background text-foreground overflow-x-hidden"
     >
       {/* ============================= NAV ============================= */}
-      <header className="fixed top-4 inset-x-0 z-50 px-4">
+      <header className="fixed top-0 inset-x-0 z-50">
         <div
-          className={`mx-auto max-w-6xl rounded-2xl px-4 py-2.5 flex items-center justify-between transition-colors duration-500 ${
+          className={`transition-colors duration-500 ${
             scrolled
-              ? "liquid-glass-light border border-border/70 text-charcoal"
-              : "liquid-glass text-ivory"
+              ? "liquid-glass-light border-b border-border text-charcoal"
+              : "text-ivory"
           }`}
         >
-          <a href="#" className="nav-item flex items-center gap-2 pl-2">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-brass text-forest-deep text-xs font-bold tracking-tight">
-              V
-            </span>
-            <span className="text-sm font-semibold tracking-tight">
-              VCC
+          <div className="mx-auto max-w-6xl px-6 h-16 md:h-[76px] flex items-center justify-between">
+            <a href="#" className="nav-item flex items-baseline gap-3">
+              <span className="font-display text-2xl tracking-tight">VCC</span>
               <span
-                className={`font-normal ml-1.5 ${scrolled ? "text-charcoal/50" : "text-ivory/60"}`}
+                className={`hidden sm:block h-4 w-px self-center ${
+                  scrolled ? "bg-charcoal/25" : "bg-ivory/30"
+                }`}
+              />
+              <span
+                className={`hidden sm:block text-[10px] uppercase tracking-[0.15em] ${
+                  scrolled ? "text-charcoal/55" : "text-ivory/65"
+                }`}
               >
-                · Vitrina Comercial Cartagena
+                Vitrina Comercial · Cartagena
               </span>
-            </span>
-          </a>
-          <nav
-            className={`hidden md:flex items-center gap-8 text-sm ${
-              scrolled ? "text-charcoal/70" : "text-ivory/80"
-            }`}
-          >
-            <a href="#diferencia" className="nav-item hover:text-brass transition-colors">
-              Servicio
             </a>
-            <a href="#showcase" className="nav-item hover:text-brass transition-colors">
-              Así se ve
+            <nav
+              className={`hidden md:flex items-center gap-9 text-[13px] ${
+                scrolled ? "text-charcoal/65" : "text-ivory/75"
+              }`}
+            >
+              <a href="#servicio" className="nav-item hover:text-brass transition-colors duration-300">
+                El servicio
+              </a>
+              <a href="#caso" className="nav-item hover:text-brass transition-colors duration-300">
+                Caso real
+              </a>
+              <a href="#planes" className="nav-item hover:text-brass transition-colors duration-300">
+                Planes
+              </a>
+              <a href="#proceso" className="nav-item hover:text-brass transition-colors duration-300">
+                Proceso
+              </a>
+              <a href="#faq" className="nav-item hover:text-brass transition-colors duration-300">
+                Preguntas
+              </a>
+            </nav>
+            <a
+              href={WHATSAPP}
+              target="_blank"
+              rel="noreferrer"
+              className={`nav-item inline-flex items-center gap-2 rounded-[8px] px-4 py-2 text-xs font-medium transition-colors duration-300 ${
+                scrolled
+                  ? "bg-forest text-ivory hover:bg-forest-deep"
+                  : "bg-ivory text-forest-deep hover:bg-ivory-warm"
+              }`}
+            >
+              Anunciar
             </a>
-            <a href="#caso" className="nav-item hover:text-brass transition-colors">
-              Caso real
-            </a>
-            <a href="#planes" className="nav-item hover:text-brass transition-colors">
-              Planes
-            </a>
-            <a href="#proceso" className="nav-item hover:text-brass transition-colors">
-              Proceso
-            </a>
-            <a href="#faq" className="nav-item hover:text-brass transition-colors">
-              Preguntas
-            </a>
-          </nav>
-          <a
-            href={WHATSAPP}
-            target="_blank"
-            rel="noreferrer"
-            className={`nav-item inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-all hover:scale-[1.03] ${
-              scrolled
-                ? "bg-forest text-ivory hover:bg-forest-deep"
-                : "bg-ivory text-forest-deep hover:bg-brass-soft"
-            }`}
-          >
-            Anunciar
-            <span aria-hidden>→</span>
-          </a>
+          </div>
         </div>
       </header>
 
@@ -347,15 +379,11 @@ function LandingPage() {
       <section className="relative min-h-svh flex flex-col overflow-hidden bg-forest-deep">
         <HeroVideo />
 
-        <div className="relative z-10 flex-1 flex flex-col justify-end mx-auto w-full max-w-6xl px-6 pb-14 lg:pb-20 pt-40">
-          <div className="lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
+        <div className="relative z-10 flex-1 flex flex-col justify-end mx-auto w-full max-w-6xl px-6 pb-16 lg:pb-24 pt-44">
+          <div className="lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:gap-12">
             <div>
-              <div className="hero-badge inline-flex items-center gap-2 rounded-full liquid-glass px-3.5 py-1.5 text-[11px] uppercase tracking-[0.2em] text-ivory/85 mb-7">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="pulse-ring absolute inline-flex h-full w-full rounded-full bg-brass/60" />
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-brass" />
-                </span>
-                Pauta en Meta Ads · Cartagena
+              <div className="hero-badge mb-8">
+                <Eyebrow dark>Pauta en Meta Ads · Cartagena</Eyebrow>
               </div>
 
               <AnimatedHeading
@@ -366,49 +394,48 @@ function LandingPage() {
                 ]}
               />
 
-              <p className="hero-sub mt-6 max-w-xl text-base md:text-lg text-ivory/75 leading-relaxed">
-                Ponemos tu negocio, local o propiedad frente a compradores e
-                interesados reales en Cartagena con campañas pagadas en Meta
-                Ads. Los interesados te escriben directo por WhatsApp.
+              <p className="hero-sub mt-8 max-w-xl text-base md:text-lg font-light text-ivory/75 leading-relaxed">
+                Campañas en Meta Ads que ponen tu negocio, local o propiedad
+                frente a compradores reales en Cartagena. Cada interesado llega
+                directo a tu WhatsApp.
               </p>
 
-              <div className="mt-9 flex flex-wrap items-center gap-3">
+              <div className="mt-10 flex flex-wrap items-center gap-4">
                 <a
                   href={WHATSAPP}
                   target="_blank"
                   rel="noreferrer"
-                  className="hero-cta group inline-flex items-center gap-2.5 rounded-full bg-ivory px-7 py-3.5 text-sm font-semibold text-forest-deep hover:bg-brass-soft transition-all hover:scale-[1.03]"
+                  className="hero-cta inline-flex items-center gap-2.5 rounded-[10px] bg-ivory px-7 py-3.5 text-sm font-medium text-forest-deep hover:bg-ivory-warm transition-colors duration-300"
                 >
                   <WhatsIcon />
                   Anunciar por WhatsApp
                 </a>
                 <a
-                  href="#diferencia"
-                  className="hero-cta inline-flex items-center gap-2 rounded-full liquid-glass border border-ivory/20 px-6 py-3.5 text-sm text-ivory hover:bg-ivory hover:text-forest-deep transition-colors"
+                  href="#servicio"
+                  className="hero-cta inline-flex items-center gap-2 rounded-[10px] border border-ivory/30 px-6 py-3.5 text-sm text-ivory hover:border-brass-soft hover:text-brass-soft transition-colors duration-300"
                 >
                   Ver cómo funciona
-                  <span aria-hidden>↓</span>
                 </a>
               </div>
             </div>
 
-            <div className="hero-tag mt-10 lg:mt-0 flex lg:justify-end">
-              <div className="liquid-glass border border-ivory/20 px-6 py-3.5 rounded-2xl">
-                <span className="font-display font-semibold text-base md:text-lg text-ivory/90">
+            <div className="hero-tag mt-12 lg:mt-0 flex lg:justify-end">
+              <div className="liquid-glass border border-ivory/20 px-7 py-4 rounded-xl">
+                <span className="font-display italic text-lg md:text-xl text-ivory/90">
                   Negocios. Locales. Propiedades.
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="hero-scroll mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-widest text-ivory/50">
-            <span className="flex items-center gap-1.5">
+          <div className="hero-meta mt-14 flex flex-wrap items-center gap-x-8 gap-y-2 text-[10px] uppercase tracking-[0.15em] text-ivory/50">
+            <span className="flex items-center gap-2">
               <Dot /> Meta Ads gestionado
             </span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-2">
               <Dot /> Segmentación local
             </span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-2">
               <Dot /> Leads por WhatsApp
             </span>
           </div>
@@ -416,8 +443,8 @@ function LandingPage() {
       </section>
 
       {/* =========================== MARQUEE =========================== */}
-      <div className="border-b border-border py-4 overflow-hidden bg-background">
-        <div className="flex w-max whitespace-nowrap animate-marquee text-charcoal/40 text-xs uppercase tracking-[0.28em]">
+      <div className="border-b border-border py-5 overflow-hidden">
+        <div className="flex w-max whitespace-nowrap animate-marquee text-[10px] uppercase tracking-[0.3em] text-charcoal/40">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex shrink-0">
               {[
@@ -430,9 +457,9 @@ function LandingPage() {
                 "Consultorios",
                 "Espacios comerciales",
               ].map((t) => (
-                <span key={t} className="mx-8 flex items-center gap-8">
+                <span key={t} className="mx-10 flex items-center gap-10">
                   {t}
-                  <span className="w-1 h-1 rounded-full bg-brass" />
+                  <span className="w-1 h-1 rounded-full bg-brass/70" />
                 </span>
               ))}
             </div>
@@ -440,53 +467,45 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* ========================= DIFERENCIA ========================== */}
-      <section id="diferencia" className="relative py-24 md:py-32">
-        <div className="absolute inset-0 grid-bg pointer-events-none" />
-        <div className="relative mx-auto max-w-6xl px-6">
-          <div className="reveal max-w-2xl mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-charcoal/60">
-              El servicio
-            </div>
-            <h2 className="mt-6 font-display font-bold text-3xl md:text-5xl leading-[1.08] tracking-tight text-forest-deep">
+      {/* ========================= EL SERVICIO ========================= */}
+      <section id="servicio" className="relative py-28 md:py-40">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="reveal max-w-2xl">
+            <Eyebrow>El servicio</Eyebrow>
+            <h2 className="mt-8 font-display font-light text-4xl md:text-6xl leading-[1.05] tracking-[-0.02em] text-charcoal">
               Esto no es un portal.
               <br />
-              <span className="text-forest/60">Es pauta que sale a buscar.</span>
+              <span className="italic text-forest">
+                Es pauta que sale a buscar.
+              </span>
             </h2>
-            <p className="mt-5 text-charcoal/60 text-lg leading-relaxed">
-              Tu propiedad no se queda esperando a que alguien la encuentre en
-              un listado. La convertimos en una campaña digital que llega a las
-              personas correctas.
+            <p className="mt-7 max-w-xl text-lg font-light text-charcoal/65 leading-relaxed">
+              Tu propiedad no espera a que la encuentren en un listado. La
+              convertimos en una campaña que llega a las personas correctas.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="mt-20 grid md:grid-cols-3 gap-x-10 gap-y-14">
             {[
               {
                 t: "Pauta real, no avisos",
-                d: "Nada de clasificados ni publicaciones gratis. Invertimos en alcance pagado en Meta Ads para que tu oferta aparezca frente a miles de personas en Cartagena.",
+                d: "Nada de clasificados. Invertimos en alcance pagado en Meta Ads para que tu oferta aparezca frente a miles de personas en Cartagena.",
               },
               {
                 t: "Segmentación local",
-                d: "Dirigimos cada peso de la pauta a personas con intención real de comprar o arrendar: por zona, interés y comportamiento.",
+                d: "Cada peso de la pauta se dirige a personas con intención real de comprar o arrendar: por zona, interés y comportamiento.",
               },
               {
                 t: "Cierras por WhatsApp",
-                d: "Sin formularios ni intermediarios. Cada interesado llega directo a tu chat y tú negocias como siempre lo has hecho.",
+                d: "Sin formularios ni intermediarios. Cada interesado llega directo a tu chat y tú negocias como siempre.",
               },
             ].map((c, i) => (
-              <div
-                key={c.t}
-                className="reveal group relative rounded-2xl border border-border bg-card p-7 hover:border-brass/60 transition-all hover:-translate-y-1"
-              >
-                <div className="mb-8 flex items-center justify-between">
-                  <span className="font-display font-bold text-3xl text-brass">
-                    0{i + 1}
-                  </span>
-                  <span className="h-px flex-1 ml-4 bg-gradient-to-r from-brass/40 to-transparent" />
-                </div>
-                <h3 className="text-lg font-semibold text-charcoal">{c.t}</h3>
-                <p className="mt-2.5 text-sm text-charcoal/60 leading-relaxed">
+              <div key={c.t} className="reveal border-t border-charcoal/20 pt-7">
+                <span className="font-display italic text-2xl text-brass">
+                  0{i + 1}
+                </span>
+                <h3 className="mt-5 text-lg font-medium text-charcoal">{c.t}</h3>
+                <p className="mt-3 text-[15px] font-light text-charcoal/60 leading-relaxed">
                   {c.d}
                 </p>
               </div>
@@ -496,95 +515,100 @@ function LandingPage() {
       </section>
 
       {/* ========================== SHOWCASE =========================== */}
-      <section id="showcase" className="relative py-10 md:py-16">
+      <section className="relative bg-forest text-ivory py-28 md:py-36">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="reveal max-w-2xl mx-auto text-center mb-12">
-            <h2 className="font-display font-bold text-3xl md:text-4xl leading-[1.1] tracking-tight text-forest-deep">
+          <div className="reveal max-w-2xl mx-auto text-center mb-16">
+            <Eyebrow dark center>
+              En campaña
+            </Eyebrow>
+            <h2 className="mt-8 font-display font-light text-4xl md:text-5xl leading-[1.06] tracking-[-0.02em]">
               Así se ve tu propiedad{" "}
-              <span className="text-forest/60">en campaña.</span>
+              <span className="italic text-brass-soft">en campaña.</span>
             </h2>
           </div>
 
           <div className="stage relative mx-auto max-w-5xl">
-            <div className="relative rounded-3xl border border-border bg-card p-4 md:p-6 shadow-[0_30px_80px_-30px_oklch(0.34_0.06_155_/_0.35)]">
-              <div className="relative rounded-2xl overflow-hidden bg-forest-deep aspect-[16/10]">
-                <img
-                  src={heroImg}
-                  alt="Propiedad promocionada por VCC en Cartagena"
-                  className="stage-media absolute inset-0 h-[112%] w-full object-cover opacity-90"
-                  width={1280}
-                  height={800}
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-forest-deep/70 via-forest-deep/20 to-transparent" />
+            <div className="relative rounded-xl overflow-hidden border border-ivory/15 bg-forest-deep aspect-[16/10]">
+              <img
+                src={ctgCalle}
+                alt="Calle colonial de Cartagena con balcones y buganvilias, propiedad promocionada por VCC"
+                className="stage-media absolute inset-0 h-[112%] w-full object-cover"
+                width={1600}
+                height={1067}
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-forest-deep/70 via-forest-deep/15 to-transparent" />
 
-                {/* Vista previa del anuncio */}
-                <div className="float absolute top-5 left-5 md:top-8 md:left-8 w-64 rounded-xl bg-card p-3 shadow-2xl border border-border">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="h-7 w-7 rounded-full bg-forest text-ivory grid place-items-center text-[10px] font-bold">
-                      V
+              {/* Vista previa del anuncio */}
+              <div className="float absolute top-5 left-5 md:top-8 md:left-8 w-64 rounded-[10px] bg-ivory p-3 border border-charcoal/10">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-7 w-7 rounded-full bg-forest text-ivory grid place-items-center text-[10px] font-display">
+                    V
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[11px] font-medium text-charcoal truncate">
+                      VCC · Vitrina Cartagena
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[11px] font-semibold text-charcoal truncate">
-                        VCC · Vitrina Cartagena
-                      </div>
-                      <div className="text-[10px] text-charcoal/50">
-                        Contenido patrocinado
-                      </div>
-                    </div>
-                    <div className="text-[9px] rounded-full bg-forest/10 text-forest px-1.5 py-0.5 font-semibold">
-                      Ad
+                    <div className="text-[10px] text-charcoal/50">
+                      Contenido patrocinado
                     </div>
                   </div>
-                  <div className="rounded-md bg-ivory-warm h-20 mb-2 overflow-hidden">
-                    <img src={heroImg} alt="" className="h-full w-full object-cover" />
-                  </div>
-                  <div className="text-[11px] font-semibold text-charcoal leading-tight">
-                    Local comercial en Centro Histórico — 120m²
-                  </div>
-                  <button className="mt-2 w-full rounded-md bg-forest text-ivory text-[11px] py-1.5 font-medium">
-                    Enviar mensaje
-                  </button>
-                </div>
-
-                {/* Lead de WhatsApp */}
-                <div className="float absolute bottom-5 right-5 md:bottom-8 md:right-8 w-72 rounded-xl bg-card p-3 shadow-2xl border border-border">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="h-7 w-7 rounded-full bg-[#25D366]/15 grid place-items-center">
-                      <WhatsIcon color="#25D366" size={14} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[11px] font-semibold text-charcoal">
-                        Nuevo interesado
-                      </div>
-                      <div className="text-[10px] text-charcoal/50">
-                        WhatsApp · hace 2 min
-                      </div>
-                    </div>
-                    <div className="h-2 w-2 rounded-full bg-[#25D366]" />
-                  </div>
-                  <div className="rounded-lg bg-ivory-warm p-2.5 text-[11px] text-charcoal leading-snug">
-                    "Hola, vi el anuncio del local en Getsemaní. ¿Sigue
-                    disponible?"
+                  <div className="text-[9px] rounded-[4px] border border-charcoal/20 text-charcoal/60 px-1.5 py-0.5">
+                    Ad
                   </div>
                 </div>
+                <div className="rounded-[6px] h-20 mb-2 overflow-hidden">
+                  <img
+                    src={ctgLocal}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="text-[11px] font-medium text-charcoal leading-tight">
+                  Local comercial en Centro Histórico — 120 m²
+                </div>
+                <button className="mt-2 w-full rounded-[6px] bg-forest text-ivory text-[11px] py-1.5">
+                  Enviar mensaje
+                </button>
+              </div>
 
-                {/* Métricas */}
-                <div className="float absolute bottom-5 left-5 md:bottom-8 md:left-8 w-52 rounded-xl bg-forest text-ivory p-3 shadow-2xl">
-                  <div className="text-[10px] uppercase tracking-widest text-brass mb-1.5">
-                    Alcance pagado · 7d
+              {/* Lead de WhatsApp */}
+              <div className="float absolute bottom-5 right-5 md:bottom-8 md:right-8 w-72 rounded-[10px] bg-ivory p-3 border border-charcoal/10">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-7 w-7 rounded-full bg-[#25D366]/15 grid place-items-center">
+                    <WhatsIcon color="#25D366" size={14} />
                   </div>
-                  <div className="text-2xl font-semibold tracking-tight">
-                    12.480
+                  <div className="flex-1">
+                    <div className="text-[11px] font-medium text-charcoal">
+                      Nuevo interesado
+                    </div>
+                    <div className="text-[10px] text-charcoal/50">
+                      WhatsApp · hace 2 min
+                    </div>
                   </div>
-                  <div className="flex items-end gap-1 mt-2 h-8">
-                    {[35, 55, 40, 68, 50, 82, 95].map((h, i) => (
-                      <div
-                        key={i}
-                        className="flex-1 rounded-sm bg-brass origin-bottom"
-                        style={{ height: `${h}%` }}
-                      />
-                    ))}
-                  </div>
+                  <div className="h-1.5 w-1.5 rounded-full bg-[#25D366]" />
+                </div>
+                <div className="rounded-[8px] bg-ivory-warm/70 p-2.5 text-[11px] text-charcoal leading-snug">
+                  "Hola, vi el anuncio del local en Getsemaní. ¿Sigue
+                  disponible?"
+                </div>
+              </div>
+
+              {/* Métricas */}
+              <div className="float absolute bottom-5 left-5 md:bottom-8 md:left-8 w-52 rounded-[10px] bg-forest-deep border border-ivory/15 text-ivory p-3.5">
+                <div className="text-[9px] uppercase tracking-[0.15em] text-brass-soft mb-1.5">
+                  Alcance pagado · 7d
+                </div>
+                <div className="font-display font-light text-2xl tracking-tight">
+                  12.480
+                </div>
+                <div className="flex items-end gap-1 mt-2.5 h-8">
+                  {[35, 55, 40, 68, 50, 82, 95].map((h, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 rounded-[2px] bg-brass/80"
+                      style={{ height: `${h}%` }}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -593,31 +617,26 @@ function LandingPage() {
       </section>
 
       {/* ========================== FORMATOS =========================== */}
-      <section id="formatos" className="relative py-16 md:py-24">
+      <section id="formatos" className="relative py-28 md:py-36">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="reveal max-w-2xl mx-auto text-center mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-charcoal/60">
-              Vista previa del anuncio
-            </div>
-            <h2 className="mt-6 font-display font-bold text-3xl md:text-4xl leading-[1.1] tracking-tight text-forest-deep">
-              Feed, historias{" "}
-              <span className="text-forest/60">y reels.</span>
+          <div className="reveal max-w-2xl mx-auto text-center mb-14">
+            <Eyebrow center>Vista previa del anuncio</Eyebrow>
+            <h2 className="mt-8 font-display font-light text-4xl md:text-5xl leading-[1.06] tracking-[-0.02em] text-charcoal">
+              Feed, historias <span className="italic text-forest">y reels.</span>
             </h2>
-            <p className="mt-4 text-charcoal/60 text-lg">
-              Tal como lo muestra el administrador de anuncios de Meta: tu
-              propiedad lista para aparecer en cada ubicación.
+            <p className="mt-5 text-lg font-light text-charcoal/60">
+              Tal como lo muestra el administrador de anuncios de Meta.
             </p>
           </div>
 
-          <div className="reveal rounded-3xl border border-border bg-card p-5 md:p-8">
-            {/* Barra superior del panel, estilo Ads Manager */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-5 mb-8 border-b border-border">
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-8 w-8 place-items-center rounded-lg bg-forest text-ivory text-[10px] font-bold">
+          <div className="reveal rounded-xl border border-border bg-card p-6 md:p-10">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-10 border-b border-border">
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-9 place-items-center rounded-[8px] bg-forest text-ivory font-display text-sm">
                   V
                 </span>
                 <div>
-                  <div className="text-sm font-semibold text-charcoal">
+                  <div className="text-sm font-medium text-charcoal">
                     Vista previa del anuncio
                   </div>
                   <div className="text-[11px] text-charcoal/50">
@@ -625,28 +644,25 @@ function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] font-medium">
-                <span className="rounded-full bg-forest text-ivory px-3 py-1">
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.12em]">
+                <span className="rounded-[6px] bg-forest text-ivory px-3 py-1.5">
                   Feed
                 </span>
-                <span className="rounded-full bg-ivory-warm text-charcoal/70 px-3 py-1">
+                <span className="rounded-[6px] bg-ivory-warm/70 text-charcoal/60 px-3 py-1.5">
                   Historias
                 </span>
-                <span className="rounded-full bg-ivory-warm text-charcoal/70 px-3 py-1">
+                <span className="rounded-[6px] bg-ivory-warm/70 text-charcoal/60 px-3 py-1.5">
                   Reels
-                </span>
-                <span className="ml-1 hidden sm:inline text-charcoal/40">
-                  + 6 ubicaciones
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-10 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 lg:gap-14 max-w-3xl mx-auto">
               <div className="preview-card">
                 <PhoneFrame>
                   <FeedPreview />
                 </PhoneFrame>
-                <div className="mt-4 text-center text-[11px] uppercase tracking-widest text-charcoal/50">
+                <div className="mt-5 text-center text-[10px] uppercase tracking-[0.15em] text-charcoal/50">
                   Feed de Instagram
                 </div>
               </div>
@@ -654,7 +670,7 @@ function LandingPage() {
                 <PhoneFrame>
                   <StoryPreview />
                 </PhoneFrame>
-                <div className="mt-4 text-center text-[11px] uppercase tracking-widest text-charcoal/50">
+                <div className="mt-5 text-center text-[10px] uppercase tracking-[0.15em] text-charcoal/50">
                   Historias
                 </div>
               </div>
@@ -662,7 +678,7 @@ function LandingPage() {
                 <PhoneFrame>
                   <ReelPreview />
                 </PhoneFrame>
-                <div className="mt-4 text-center text-[11px] uppercase tracking-widest text-charcoal/50">
+                <div className="mt-5 text-center text-[10px] uppercase tracking-[0.15em] text-charcoal/50">
                   Reels
                 </div>
               </div>
@@ -672,42 +688,36 @@ function LandingPage() {
       </section>
 
       {/* ========================= CASO DE ÉXITO ======================= */}
-      <section id="caso" className="relative py-16 md:py-24">
+      <section id="caso" className="relative bg-ivory-warm/40 border-y border-border py-28 md:py-36">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+          <div className="grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
             <div className="reveal">
-              <div className="inline-flex items-center gap-2 rounded-full border border-brass/50 bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-brass">
-                ★ Caso de éxito real
-              </div>
-              <h2 className="mt-6 font-display font-bold text-3xl md:text-5xl leading-[1.08] tracking-tight text-forest-deep">
+              <Eyebrow>Caso de éxito real</Eyebrow>
+              <h2 className="mt-8 font-display font-light text-4xl md:text-5xl leading-[1.06] tracking-[-0.02em] text-charcoal">
                 De 3 meses sin vender{" "}
-                <span className="text-forest/60">
-                  a cerrar la venta en menos de 48 horas.
+                <span className="italic text-forest">
+                  a vendido en 48 horas.
                 </span>
               </h2>
-              <p className="mt-5 text-charcoal/60 text-lg leading-relaxed">
-                Tienda de abarrotes esquinera en San Fernando, sector Medellín
-                (Cartagena). Ticket:{" "}
-                <span className="font-semibold text-charcoal">$60.000.000</span>.
-                Creamos la pieza, activamos Meta Ads y llevamos a los
-                interesados directo al WhatsApp del dueño.
+              <p className="mt-6 text-lg font-light text-charcoal/65 leading-relaxed">
+                Tienda de abarrotes esquinera en San Fernando, Cartagena.
+                Ticket: <span className="text-charcoal">$60.000.000</span>.
+                Creamos la pieza, activamos Meta Ads y llevamos los interesados
+                directo al WhatsApp del dueño.
               </p>
 
-              <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="mt-10 grid grid-cols-2 gap-px bg-charcoal/15 border border-charcoal/15 rounded-[10px] overflow-hidden">
                 {[
                   { v: "155", l: "conversaciones por WhatsApp" },
                   { v: "$334", l: "costo por conversación" },
                   { v: "$51.796", l: "inversión total en pauta" },
                   { v: "15.229", l: "impresiones en Meta" },
                 ].map((m) => (
-                  <div
-                    key={m.l}
-                    className="rounded-2xl border border-border bg-card p-5"
-                  >
-                    <div className="font-display font-bold text-2xl md:text-3xl text-forest">
+                  <div key={m.l} className="bg-ivory p-6">
+                    <div className="font-display font-light text-3xl text-forest">
                       {m.v}
                     </div>
-                    <div className="mt-1 text-xs text-charcoal/60 leading-snug">
+                    <div className="mt-1.5 text-xs font-light text-charcoal/60 leading-snug">
                       {m.l}
                     </div>
                   </div>
@@ -718,7 +728,7 @@ function LandingPage() {
                 href="https://wa.me/573007189383?text=Hola%20VCC%2C%20quiero%20un%20resultado%20como%20el%20de%20la%20tienda%20de%20abarrotes"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-forest px-6 py-3.5 text-sm font-semibold text-ivory hover:bg-forest-deep transition-all hover:scale-[1.02]"
+                className="mt-10 inline-flex items-center gap-2.5 rounded-[10px] bg-forest px-7 py-3.5 text-sm font-medium text-ivory hover:bg-forest-deep transition-colors duration-300"
               >
                 <WhatsIcon />
                 Quiero un resultado así
@@ -743,7 +753,7 @@ function LandingPage() {
                     },
                     {
                       src: caso4,
-                      alt: "¿Quieres vender más rápido? Antes: 3 meses intentando vender. Después: vendido en menos de 48 horas",
+                      alt: "Antes: 3 meses intentando vender. Después: vendido en menos de 48 horas",
                     },
                   ].map((img, i) => (
                     <CarouselItem key={i}>
@@ -753,16 +763,16 @@ function LandingPage() {
                         loading="lazy"
                         width={1000}
                         height={1250}
-                        className="w-full rounded-2xl border border-border shadow-[0_24px_60px_-28px_oklch(0.34_0.06_155_/_0.4)]"
+                        className="w-full rounded-[10px] border border-charcoal/10"
                       />
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="max-lg:-left-3 border-border bg-card text-forest hover:bg-forest hover:text-ivory" />
-                <CarouselNext className="max-lg:-right-3 border-border bg-card text-forest hover:bg-forest hover:text-ivory" />
+                <CarouselPrevious className="max-lg:-left-3 rounded-[8px] border-charcoal/20 bg-ivory text-charcoal hover:bg-forest hover:text-ivory" />
+                <CarouselNext className="max-lg:-right-3 rounded-[8px] border-charcoal/20 bg-ivory text-charcoal hover:bg-forest hover:text-ivory" />
               </Carousel>
-              <div className="mt-4 text-center text-[11px] uppercase tracking-widest text-charcoal/50">
-                Desliza para ver la campaña y los resultados · Capturas reales
+              <div className="mt-5 text-center text-[10px] uppercase tracking-[0.15em] text-charcoal/45">
+                Desliza · Capturas reales de la campaña
               </div>
             </div>
           </div>
@@ -770,20 +780,20 @@ function LandingPage() {
       </section>
 
       {/* ============================ STATS ============================ */}
-      <section className="py-16 md:py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="reveal rounded-3xl bg-forest text-ivory px-8 py-12 md:px-14 md:py-14 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+      <section className="bg-forest text-ivory py-20 md:py-28">
+        <div className="reveal mx-auto max-w-6xl px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-14 lg:divide-x lg:divide-ivory/10">
             {[
               { v: "48h", l: "de contacto a campaña activa" },
               { v: "100%", l: "de la campaña gestionada por VCC" },
               { v: "24/7", l: "tu anuncio circulando en Meta" },
               { v: "1 chat", l: "todos los interesados en tu WhatsApp" },
             ].map((s) => (
-              <div key={s.v} className="text-center lg:text-left">
-                <div className="font-display font-bold text-4xl md:text-5xl text-brass-soft">
+              <div key={s.v} className="text-center px-6">
+                <div className="font-display font-light text-5xl md:text-6xl text-brass-soft">
                   {s.v}
                 </div>
-                <div className="mt-2 text-sm text-ivory/65 leading-snug max-w-[16ch] mx-auto lg:mx-0">
+                <div className="mt-3 text-[13px] font-light text-ivory/60 leading-snug max-w-[18ch] mx-auto">
                   {s.l}
                 </div>
               </div>
@@ -793,37 +803,35 @@ function LandingPage() {
       </section>
 
       {/* =========================== PLANES ============================ */}
-      <section id="planes" className="relative py-16 md:py-24">
+      <section id="planes" className="relative py-28 md:py-40">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="reveal max-w-2xl mx-auto text-center mb-14">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-charcoal/60">
-              Planes VCC
-            </div>
-            <h2 className="mt-6 font-display font-bold text-3xl md:text-5xl leading-[1.08] tracking-tight text-forest-deep">
-              Elige el plan que{" "}
-              <span className="text-forest/60">impulsa tu vitrina.</span>
+          <div className="reveal max-w-2xl mx-auto text-center mb-16">
+            <Eyebrow center>Planes</Eyebrow>
+            <h2 className="mt-8 font-display font-light text-4xl md:text-6xl leading-[1.05] tracking-[-0.02em] text-charcoal">
+              El plan que{" "}
+              <span className="italic text-forest">impulsa tu vitrina.</span>
             </h2>
-            <p className="mt-4 text-charcoal/60 text-lg">
+            <p className="mt-5 text-lg font-light text-charcoal/60">
               Gestión de pauta para vender o arrendar más rápido.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
+          <div className="grid md:grid-cols-3 gap-6 items-stretch">
             {/* IMPULSO */}
-            <div className="reveal flex flex-col rounded-2xl border border-border bg-card p-7">
-              <div className="mb-5 grid h-12 w-12 place-items-center rounded-full border border-brass/50 text-brass">
-                <Rocket className="h-5 w-5" strokeWidth={1.6} />
+            <div className="reveal flex flex-col rounded-xl border border-border bg-card p-8">
+              <div className="mb-6 grid h-11 w-11 place-items-center rounded-full border border-brass/50 text-brass">
+                <Rocket className="h-4.5 w-4.5" strokeWidth={1.4} />
               </div>
-              <h3 className="font-display font-bold text-xl tracking-tight text-forest-deep uppercase">
-                Impulso
-              </h3>
-              <div className="mt-1.5 pb-4 border-b border-brass/30 text-charcoal/70 text-sm">
-                15 días ·{" "}
-                <span className="font-display font-bold text-lg text-forest-deep">
+              <h3 className="font-display text-2xl text-charcoal">Impulso</h3>
+              <div className="mt-2 pb-5 border-b border-border flex items-baseline gap-2">
+                <span className="font-display font-light text-3xl text-forest">
                   $300.000
                 </span>
+                <span className="text-[11px] uppercase tracking-[0.12em] text-charcoal/50">
+                  15 días
+                </span>
               </div>
-              <ul className="mt-5 space-y-3 text-sm text-charcoal/70 leading-snug flex-1">
+              <ul className="mt-6 space-y-3.5 text-sm font-light text-charcoal/70 leading-snug flex-1">
                 {[
                   "5 imágenes rediseñadas con IA (fotos tomadas por el cliente)",
                   "1 campaña activa · FB + IG + WhatsApp",
@@ -831,8 +839,8 @@ function LandingPage() {
                   "CTA directo al WhatsApp del cliente",
                   "Reporte final",
                 ].map((f) => (
-                  <li key={f} className="flex gap-2.5">
-                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-brass" strokeWidth={2.5} />
+                  <li key={f} className="flex gap-3">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-brass" strokeWidth={2} />
                     {f}
                   </li>
                 ))}
@@ -841,7 +849,7 @@ function LandingPage() {
                 href="https://wa.me/573007189383?text=Hola%20VCC%2C%20me%20interesa%20el%20plan%20Impulso"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-7 inline-flex items-center justify-center gap-2 rounded-full border border-forest/30 px-5 py-3 text-sm font-medium text-forest hover:bg-forest hover:text-ivory transition-colors"
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-[10px] border border-charcoal/25 px-5 py-3 text-sm text-charcoal hover:border-brass hover:text-forest transition-colors duration-300"
               >
                 <WhatsIcon size={15} />
                 Empezar con Impulso
@@ -849,23 +857,23 @@ function LandingPage() {
             </div>
 
             {/* GESTIONADO */}
-            <div className="reveal relative flex flex-col rounded-2xl border-2 border-forest bg-card p-7">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-forest px-3 py-1 text-[10px] uppercase tracking-[0.15em] text-ivory font-medium">
+            <div className="reveal relative flex flex-col rounded-xl border border-forest/70 bg-card p-8">
+              <div className="absolute -top-3 left-8 rounded-[6px] bg-forest px-3 py-1 text-[9px] uppercase tracking-[0.15em] text-ivory">
                 Más elegido
               </div>
-              <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-forest text-ivory">
-                <Store className="h-5 w-5" strokeWidth={1.6} />
+              <div className="mb-6 grid h-11 w-11 place-items-center rounded-full bg-forest text-ivory">
+                <Store className="h-4.5 w-4.5" strokeWidth={1.4} />
               </div>
-              <h3 className="font-display font-bold text-xl tracking-tight text-forest-deep uppercase">
-                Gestionado
-              </h3>
-              <div className="mt-1.5 pb-4 border-b border-brass/30 text-charcoal/70 text-sm">
-                Mes completo ·{" "}
-                <span className="font-display font-bold text-lg text-forest-deep">
+              <h3 className="font-display text-2xl text-charcoal">Gestionado</h3>
+              <div className="mt-2 pb-5 border-b border-border flex items-baseline gap-2">
+                <span className="font-display font-light text-3xl text-forest">
                   $600.000
                 </span>
+                <span className="text-[11px] uppercase tracking-[0.12em] text-charcoal/50">
+                  Mes completo
+                </span>
               </div>
-              <ul className="mt-5 space-y-3 text-sm text-charcoal/70 leading-snug flex-1">
+              <ul className="mt-6 space-y-3.5 text-sm font-light text-charcoal/70 leading-snug flex-1">
                 {[
                   "Hasta 10 imágenes rediseñadas con IA + 1 video con IA",
                   "Hasta 2 campañas activas · FB + IG + WhatsApp",
@@ -874,8 +882,8 @@ function LandingPage() {
                   "CTA directo al WhatsApp del cliente",
                   "Seguimiento semanal + reporte final",
                 ].map((f) => (
-                  <li key={f} className="flex gap-2.5">
-                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-forest" strokeWidth={2.5} />
+                  <li key={f} className="flex gap-3">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-forest" strokeWidth={2} />
                     {f}
                   </li>
                 ))}
@@ -884,7 +892,7 @@ function LandingPage() {
                 href="https://wa.me/573007189383?text=Hola%20VCC%2C%20me%20interesa%20el%20plan%20Gestionado"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-forest px-5 py-3 text-sm font-semibold text-ivory hover:bg-forest-deep transition-colors"
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-[10px] bg-forest px-5 py-3 text-sm font-medium text-ivory hover:bg-forest-deep transition-colors duration-300"
               >
                 <WhatsIcon size={15} />
                 Empezar con Gestionado
@@ -892,20 +900,20 @@ function LandingPage() {
             </div>
 
             {/* PREMIUM */}
-            <div className="reveal flex flex-col rounded-2xl border border-brass/60 bg-forest-deep p-7 text-ivory">
-              <div className="mb-5 grid h-12 w-12 place-items-center rounded-full border border-brass text-brass">
-                <Gem className="h-5 w-5" strokeWidth={1.6} />
+            <div className="reveal flex flex-col rounded-xl border border-brass/40 bg-forest p-8 text-ivory">
+              <div className="mb-6 grid h-11 w-11 place-items-center rounded-full border border-brass-soft/60 text-brass-soft">
+                <Gem className="h-4.5 w-4.5" strokeWidth={1.4} />
               </div>
-              <h3 className="font-display font-bold text-xl tracking-tight text-brass-soft uppercase">
-                Premium
-              </h3>
-              <div className="mt-1.5 pb-4 border-b border-brass/30 text-ivory/70 text-sm">
-                Mes completo ·{" "}
-                <span className="font-display font-bold text-lg text-brass-soft">
+              <h3 className="font-display text-2xl text-ivory">Premium</h3>
+              <div className="mt-2 pb-5 border-b border-ivory/15 flex items-baseline gap-2">
+                <span className="font-display font-light text-3xl text-brass-soft">
                   $900.000
                 </span>
+                <span className="text-[11px] uppercase tracking-[0.12em] text-ivory/55">
+                  Mes completo
+                </span>
               </div>
-              <ul className="mt-5 space-y-3 text-sm text-ivory/80 leading-snug flex-1">
+              <ul className="mt-6 space-y-3.5 text-sm font-light text-ivory/80 leading-snug flex-1">
                 {[
                   "Todo lo de Gestionado",
                   "Hasta 4 campañas activas · FB + IG + WhatsApp",
@@ -914,8 +922,8 @@ function LandingPage() {
                   "Dirección de campaña el mes completo",
                   "Landing de catálogo en vitrinavcc.com con CTA a su WhatsApp",
                 ].map((f) => (
-                  <li key={f} className="flex gap-2.5">
-                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-brass" strokeWidth={2.5} />
+                  <li key={f} className="flex gap-3">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-brass-soft" strokeWidth={2} />
                     {f}
                   </li>
                 ))}
@@ -924,7 +932,7 @@ function LandingPage() {
                 href="https://wa.me/573007189383?text=Hola%20VCC%2C%20me%20interesa%20el%20plan%20Premium"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-brass px-5 py-3 text-sm font-semibold text-forest-deep hover:bg-brass-soft transition-colors"
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-[10px] bg-ivory px-5 py-3 text-sm font-medium text-forest-deep hover:bg-ivory-warm transition-colors duration-300"
               >
                 <WhatsIcon size={15} />
                 Empezar con Premium
@@ -932,40 +940,36 @@ function LandingPage() {
             </div>
           </div>
 
-          <div className="reveal mt-8 flex flex-col sm:flex-row items-center justify-center gap-x-8 gap-y-2 text-sm text-charcoal/60 text-center">
+          <div className="reveal mt-12 border-t border-border pt-7 flex flex-col sm:flex-row items-center justify-center gap-x-10 gap-y-2 text-sm font-light text-charcoal/60 text-center">
             <span>
               El presupuesto de pauta lo pone el cliente ·{" "}
-              <span className="font-medium text-charcoal">
-                VCC cobra la gestión.
-              </span>
+              <span className="text-charcoal">VCC cobra la gestión.</span>
             </span>
-            <span className="hidden sm:inline w-1 h-1 rounded-full bg-brass" />
+            <span className="hidden sm:inline w-1 h-1 rounded-full bg-brass/70" />
             <span>
-              Tú gestionas tus leads directo en WhatsApp ·{" "}
-              <span className="font-medium text-charcoal">300 718 9383</span>
+              Tus leads, directo en WhatsApp ·{" "}
+              <span className="text-charcoal">300 718 9383</span>
             </span>
           </div>
         </div>
       </section>
 
       {/* =========================== PROCESO =========================== */}
-      <section id="proceso" className="process relative py-16 md:py-24">
+      <section id="proceso" className="relative border-t border-border py-28 md:py-36">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="reveal max-w-2xl mx-auto text-center mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-charcoal/60">
-              Proceso
-            </div>
-            <h2 className="mt-6 font-display font-bold text-3xl md:text-5xl leading-[1.08] tracking-tight text-forest-deep">
+          <div className="reveal max-w-2xl mb-16">
+            <Eyebrow>Proceso</Eyebrow>
+            <h2 className="mt-8 font-display font-light text-4xl md:text-5xl leading-[1.06] tracking-[-0.02em] text-charcoal">
               Anunciar con nosotros{" "}
-              <span className="text-forest/60">es simple.</span>
+              <span className="italic text-forest">es simple.</span>
             </h2>
-            <p className="mt-4 text-charcoal/60 text-lg">
+            <p className="mt-5 max-w-xl text-lg font-light text-charcoal/60">
               Tú aportas la propiedad y el presupuesto de pauta. Nosotros
               construimos, lanzamos y optimizamos la campaña.
             </p>
           </div>
 
-          <div className="process-grid grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="process-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-12">
             {[
               {
                 n: "01",
@@ -988,20 +992,12 @@ function LandingPage() {
                 d: "Los interesados te escriben directo por WhatsApp.",
               },
             ].map((s) => (
-              <div
-                key={s.n}
-                className="step-card group relative rounded-2xl border border-border bg-card p-6 hover:border-forest/40 transition-all hover:-translate-y-1"
-              >
-                <div className="flex items-center justify-between mb-8">
-                  <span className="font-display font-bold text-2xl text-forest/60">
-                    {s.n}
-                  </span>
-                  <span className="grid h-8 w-8 place-items-center rounded-full bg-ivory-warm text-forest group-hover:bg-forest group-hover:text-ivory transition-colors">
-                    <span aria-hidden>→</span>
-                  </span>
-                </div>
-                <h3 className="text-lg font-semibold text-charcoal">{s.t}</h3>
-                <p className="mt-2 text-sm text-charcoal/60 leading-relaxed">
+              <div key={s.n} className="step-card border-t border-charcoal/20 pt-7">
+                <span className="font-display italic text-2xl text-brass">
+                  {s.n}
+                </span>
+                <h3 className="mt-5 text-lg font-medium text-charcoal">{s.t}</h3>
+                <p className="mt-3 text-[15px] font-light text-charcoal/60 leading-relaxed">
                   {s.d}
                 </p>
               </div>
@@ -1011,15 +1007,13 @@ function LandingPage() {
       </section>
 
       {/* ============================= FAQ ============================= */}
-      <section id="faq" className="relative py-16 md:py-24">
-        <div className="mx-auto max-w-3xl px-6">
-          <div className="reveal text-center mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-charcoal/60">
-              Preguntas frecuentes
-            </div>
-            <h2 className="mt-6 font-display font-bold text-3xl md:text-4xl leading-[1.1] tracking-tight text-forest-deep">
+      <section id="faq" className="relative border-t border-border py-28 md:py-36">
+        <div className="mx-auto max-w-2xl px-6">
+          <div className="reveal text-center mb-14">
+            <Eyebrow center>Preguntas frecuentes</Eyebrow>
+            <h2 className="mt-8 font-display font-light text-4xl md:text-5xl leading-[1.06] tracking-[-0.02em] text-charcoal">
               Lo que siempre{" "}
-              <span className="text-forest/60">nos preguntan.</span>
+              <span className="italic text-forest">nos preguntan.</span>
             </h2>
           </div>
 
@@ -1048,10 +1042,10 @@ function LandingPage() {
                 },
               ].map((item, i) => (
                 <AccordionItem key={i} value={`item-${i}`}>
-                  <AccordionTrigger className="text-left text-base font-medium text-charcoal hover:text-forest hover:no-underline">
+                  <AccordionTrigger className="text-left text-[15px] font-medium text-charcoal hover:text-forest hover:no-underline py-5">
                     {item.q}
                   </AccordionTrigger>
-                  <AccordionContent className="text-charcoal/60 leading-relaxed">
+                  <AccordionContent className="text-[15px] font-light text-charcoal/60 leading-relaxed">
                     {item.a}
                   </AccordionContent>
                 </AccordionItem>
@@ -1062,77 +1056,69 @@ function LandingPage() {
       </section>
 
       {/* ============================= CTA ============================= */}
-      <section id="contacto" className="relative pb-20 pt-4">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="cta-block relative overflow-hidden rounded-3xl bg-forest-deep text-ivory p-10 md:p-20 text-center">
-            <div
-              className="absolute inset-0 opacity-[0.1]"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 20% 20%, oklch(0.86 0.05 82) 0%, transparent 40%), radial-gradient(circle at 80% 80%, oklch(0.86 0.05 82) 0%, transparent 40%)",
-              }}
-            />
-            <div className="relative">
-              <div className="inline-flex items-center gap-2 rounded-full border border-ivory/20 bg-ivory/5 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-brass">
-                Empieza hoy
-              </div>
-              <h2 className="mt-6 font-display font-bold text-3xl md:text-6xl leading-[1.08] tracking-tight max-w-3xl mx-auto">
-                {"Tu propiedad frente a".split(" ").map((w, i) => (
-                  <span
-                    key={i}
-                    className="inline-block overflow-hidden align-bottom mr-[0.25em]"
-                  >
-                    <span className="cta-word inline-block">{w}</span>
-                  </span>
-                ))}
-                <br />
-                {"compradores reales.".split(" ").map((w, i) => (
-                  <span
-                    key={i}
-                    className="inline-block overflow-hidden align-bottom mr-[0.25em]"
-                  >
-                    <span className="cta-word inline-block text-brass-soft">
-                      {w}
-                    </span>
-                  </span>
-                ))}
-              </h2>
-              <p className="mt-5 max-w-lg mx-auto text-ivory/70">
-                En menos de 48 horas tu campaña puede estar corriendo en Meta
-                Ads con interesados llegando a tu WhatsApp.
-              </p>
-              <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-                <a
-                  href={WHATSAPP}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group inline-flex items-center gap-2.5 rounded-full bg-ivory text-forest-deep px-7 py-3.5 text-sm font-semibold hover:bg-brass-soft transition-all hover:scale-[1.03]"
-                >
-                  <WhatsIcon />
-                  Escribir al 300 718 9383
-                </a>
-                <a
-                  href="https://instagram.com/vitrinavcc"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-ivory/25 px-6 py-3.5 text-sm text-ivory hover:bg-ivory/5 transition-all"
-                >
-                  @vitrinavcc
-                </a>
-              </div>
-            </div>
+      <section id="contacto" className="cta-block relative bg-forest text-ivory py-28 md:py-40 text-center">
+        <div className="mx-auto max-w-4xl px-6">
+          <Eyebrow dark center>
+            Empieza hoy
+          </Eyebrow>
+          <h2 className="mt-8 font-display font-light text-4xl md:text-7xl leading-[1.04] tracking-[-0.02em]">
+            {"Tu propiedad frente a".split(" ").map((w, i) => (
+              <span
+                key={i}
+                className="inline-block overflow-hidden align-bottom mr-[0.24em]"
+              >
+                <span className="cta-word inline-block">{w}</span>
+              </span>
+            ))}
+            <br />
+            {"compradores reales.".split(" ").map((w, i) => (
+              <span
+                key={i}
+                className="inline-block overflow-hidden align-bottom mr-[0.24em]"
+              >
+                <span className="cta-word inline-block italic text-brass-soft">
+                  {w}
+                </span>
+              </span>
+            ))}
+          </h2>
+          <p className="mt-7 max-w-md mx-auto font-light text-ivory/65 leading-relaxed">
+            En menos de 48 horas tu campaña puede estar corriendo en Meta Ads,
+            con interesados llegando a tu WhatsApp.
+          </p>
+          <div className="mt-11 flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={WHATSAPP}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2.5 rounded-[10px] bg-ivory text-forest-deep px-7 py-3.5 text-sm font-medium hover:bg-ivory-warm transition-colors duration-300"
+            >
+              <WhatsIcon />
+              Escribir al 300 718 9383
+            </a>
+            <a
+              href="https://instagram.com/vitrinavcc"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-[10px] border border-ivory/30 px-6 py-3.5 text-sm text-ivory hover:border-brass-soft hover:text-brass-soft transition-colors duration-300"
+            >
+              @vitrinavcc
+            </a>
           </div>
-
-          <footer className="mt-10 flex flex-wrap items-center justify-between gap-4 text-xs text-charcoal/50 px-2">
-            <div>© {new Date().getFullYear()} Vitrina Comercial Cartagena</div>
-            <div className="flex items-center gap-4">
-              <span>Cartagena, Colombia</span>
-              <span className="w-1 h-1 rounded-full bg-brass" />
-              <span>Servicio de pauta digital</span>
-            </div>
-          </footer>
         </div>
       </section>
+
+      {/* ============================ FOOTER =========================== */}
+      <footer className="py-10">
+        <div className="mx-auto max-w-6xl px-6 flex flex-wrap items-center justify-between gap-4 text-[10px] uppercase tracking-[0.15em] text-charcoal/45">
+          <div>© {new Date().getFullYear()} Vitrina Comercial Cartagena</div>
+          <div className="flex items-center gap-5">
+            <span>Cartagena, Colombia</span>
+            <span className="w-1 h-1 rounded-full bg-brass/70" />
+            <span>Servicio de pauta digital</span>
+          </div>
+        </div>
+      </footer>
 
       {/* ================= BOTÓN FLOTANTE DE WHATSAPP ================== */}
       <a
@@ -1140,10 +1126,9 @@ function LandingPage() {
         target="_blank"
         rel="noreferrer"
         aria-label="Escribir a VCC por WhatsApp"
-        className="fixed bottom-6 right-6 z-50 grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_10px_30px_-8px_rgba(37,211,102,0.6)] hover:scale-110 transition-transform"
+        className="fixed bottom-6 right-6 z-50 grid h-13 w-13 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_8px_24px_-8px_rgba(26,23,20,0.35)] hover:bg-[#1fb355] transition-colors duration-300"
       >
-        <span className="pulse-ring absolute inline-flex h-full w-full rounded-full bg-[#25D366]/50" />
-        <WhatsIcon size={26} />
+        <WhatsIcon size={24} />
       </a>
     </div>
   );
@@ -1154,14 +1139,12 @@ function LandingPage() {
 /* ---------------------------------------------------------------- */
 function PhoneFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="relative mx-auto w-full max-w-[250px] rounded-[1.4rem] bg-charcoal p-[7px] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.45)] ring-1 ring-black/40">
-      {/* Botones laterales */}
+    <div className="relative mx-auto w-full max-w-[250px] rounded-[1.4rem] bg-charcoal p-[7px] shadow-[0_20px_50px_-24px_rgba(26,23,20,0.5)]">
       <div className="absolute -right-[2px] top-[22%] h-10 w-[2px] rounded-r bg-black/70" />
       <div className="absolute -left-[2px] top-[18%] h-6 w-[2px] rounded-l bg-black/70" />
       <div className="absolute -left-[2px] top-[28%] h-6 w-[2px] rounded-l bg-black/70" />
       <div className="relative rounded-[1rem] overflow-hidden bg-black aspect-[9/16]">
         {children}
-        {/* Cámara perforada */}
         <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 h-2 w-2 rounded-full bg-black ring-1 ring-white/15" />
       </div>
     </div>
@@ -1171,7 +1154,7 @@ function PhoneFrame({ children }: { children: ReactNode }) {
 function AdAvatar({ size = "h-6 w-6" }: { size?: string }) {
   return (
     <span
-      className={`grid ${size} shrink-0 place-items-center rounded-full bg-brass text-forest-deep text-[9px] font-bold`}
+      className={`grid ${size} shrink-0 place-items-center rounded-full bg-forest text-ivory text-[9px] font-display`}
     >
       V
     </span>
@@ -1180,52 +1163,47 @@ function AdAvatar({ size = "h-6 w-6" }: { size?: string }) {
 
 function FeedPreview() {
   return (
-    <div className="absolute inset-0 bg-white flex flex-col">
-      {/* Barra de la app */}
+    <div className="absolute inset-0 bg-ivory flex flex-col">
       <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
-        <span className="font-display font-semibold text-[13px] text-charcoal">Instagram</span>
+        <span className="font-display italic font-medium text-[14px] text-charcoal">
+          Instagram
+        </span>
         <div className="flex items-center gap-2.5 text-charcoal">
-          <Heart className="h-3.5 w-3.5" strokeWidth={1.8} />
-          <Send className="h-3.5 w-3.5" strokeWidth={1.8} />
+          <Heart className="h-3.5 w-3.5" strokeWidth={1.6} />
+          <Send className="h-3.5 w-3.5" strokeWidth={1.6} />
         </div>
       </div>
-      {/* Cabecera del post */}
       <div className="flex items-center gap-1.5 px-2.5 pb-1.5">
         <AdAvatar />
         <div className="leading-tight">
-          <div className="text-[10px] font-semibold text-charcoal">
-            vitrinavcc
-          </div>
+          <div className="text-[10px] font-medium text-charcoal">vitrinavcc</div>
           <div className="text-[8px] text-charcoal/50">Publicidad</div>
         </div>
         <MoreHorizontal className="ml-auto h-3.5 w-3.5 text-charcoal/60" />
       </div>
-      {/* Imagen */}
       <div className="relative flex-1 min-h-0 overflow-hidden">
         <img
-          src={heroImg}
+          src={ctgLocal}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
-      {/* Barra CTA */}
-      <div className="flex items-center justify-between bg-forest px-2.5 py-1.5 text-[9.5px] font-medium text-ivory">
+      <div className="flex items-center justify-between bg-forest px-2.5 py-1.5 text-[9.5px] text-ivory">
         Enviar mensaje
         <span aria-hidden>›</span>
       </div>
-      {/* Acciones */}
       <div className="flex items-center gap-2.5 px-2.5 py-1.5 text-charcoal">
-        <Heart className="h-4 w-4" strokeWidth={1.8} />
-        <MessageCircle className="h-4 w-4" strokeWidth={1.8} />
-        <Send className="h-4 w-4" strokeWidth={1.8} />
-        <Bookmark className="ml-auto h-4 w-4" strokeWidth={1.8} />
+        <Heart className="h-4 w-4" strokeWidth={1.6} />
+        <MessageCircle className="h-4 w-4" strokeWidth={1.6} />
+        <Send className="h-4 w-4" strokeWidth={1.6} />
+        <Bookmark className="ml-auto h-4 w-4" strokeWidth={1.6} />
       </div>
       <div className="px-2.5 pb-2.5 leading-snug">
-        <div className="text-[9px] font-semibold text-charcoal">
+        <div className="text-[9px] font-medium text-charcoal">
           1.284 Me gusta
         </div>
-        <p className="text-[8.5px] text-charcoal/80 line-clamp-2">
-          <span className="font-semibold text-charcoal">vitrinavcc</span> Local
+        <p className="text-[8.5px] text-charcoal/75 line-clamp-2">
+          <span className="font-medium text-charcoal">vitrinavcc</span> Local
           comercial en el Centro Histórico — 120 m². Escríbenos por WhatsApp.
         </p>
       </div>
@@ -1237,13 +1215,12 @@ function StoryPreview() {
   return (
     <div className="absolute inset-0">
       <img
-        src={heroImg}
+        src={ctgInterior}
         alt=""
         className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/60 to-transparent" />
-      {/* Cabecera de la historia */}
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/55 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/55 to-transparent" />
       <div className="absolute inset-x-0 top-0 p-2.5">
         <div className="flex gap-1 mb-2">
           <div className="h-0.5 flex-1 rounded-full bg-white/90" />
@@ -1252,25 +1229,21 @@ function StoryPreview() {
         </div>
         <div className="flex items-center gap-1.5">
           <AdAvatar />
-          <span className="text-[10px] font-semibold text-white">
-            vitrinavcc
-          </span>
+          <span className="text-[10px] font-medium text-white">vitrinavcc</span>
           <span className="text-[8px] text-white/70">Publicidad</span>
           <X className="ml-auto h-3.5 w-3.5 text-white/80" />
         </div>
       </div>
-      {/* Texto sobre la imagen */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-4 text-center">
-        <div className="font-display font-semibold text-[15px] leading-tight text-white drop-shadow">
-          Local en arriendo,
+        <div className="font-display font-light text-[16px] leading-tight text-white drop-shadow">
+          Apartamento en venta,
           <br />
-          Centro Histórico.
+          <span className="italic">Centro Histórico.</span>
         </div>
       </div>
-      {/* CTA swipe-up */}
       <div className="absolute inset-x-0 bottom-0 p-3 flex flex-col items-center gap-1.5">
         <ChevronUp className="h-4 w-4 text-white" />
-        <div className="rounded-full bg-white px-4 py-1.5 text-[10px] font-semibold text-charcoal">
+        <div className="rounded-[8px] bg-white px-4 py-1.5 text-[10px] font-medium text-charcoal">
           Más información
         </div>
       </div>
@@ -1282,47 +1255,43 @@ function ReelPreview() {
   return (
     <div className="absolute inset-0">
       <img
-        src={heroImg}
+        src={ctgAzotea}
         alt=""
         className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/75 to-transparent" />
-      {/* Barra superior */}
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/70 to-transparent" />
       <div className="absolute inset-x-0 top-0 flex items-center justify-between p-2.5 text-white">
-        <span className="text-[11px] font-semibold">Reels</span>
+        <span className="text-[11px] font-medium">Reels</span>
         <MoreHorizontal className="h-3.5 w-3.5" />
       </div>
-      {/* Acciones laterales */}
       <div className="absolute right-2 bottom-20 flex flex-col items-center gap-3 text-white">
         <div className="flex flex-col items-center gap-0.5">
-          <Heart className="h-4.5 w-4.5" strokeWidth={1.8} />
+          <Heart className="h-4.5 w-4.5" strokeWidth={1.6} />
           <span className="text-[8px]">1,2 mil</span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
-          <MessageCircle className="h-4.5 w-4.5" strokeWidth={1.8} />
+          <MessageCircle className="h-4.5 w-4.5" strokeWidth={1.6} />
           <span className="text-[8px]">86</span>
         </div>
-        <Send className="h-4.5 w-4.5" strokeWidth={1.8} />
+        <Send className="h-4.5 w-4.5" strokeWidth={1.6} />
         <MoreHorizontal className="h-4 w-4" />
       </div>
-      {/* Info inferior */}
       <div className="absolute bottom-0 left-0 right-10 p-2.5 text-white space-y-1.5">
         <div className="flex items-center gap-1.5">
           <AdAvatar size="h-5 w-5" />
-          <span className="text-[10px] font-semibold">vitrinavcc</span>
-          <span className="rounded border border-white/60 px-1 text-[7.5px]">
+          <span className="text-[10px] font-medium">vitrinavcc</span>
+          <span className="rounded-[3px] border border-white/60 px-1 text-[7.5px]">
             Publicidad
           </span>
         </div>
         <p className="text-[9px] leading-snug text-white/90 line-clamp-2">
-          Local en Getsemaní disponible para arriendo. Interesados por
-          WhatsApp.
+          Ático con vista a la ciudad amurallada. Interesados por WhatsApp.
         </p>
         <div className="flex items-center gap-1 text-[8px] text-white/80">
           <Music2 className="h-2.5 w-2.5" />
           Audio original · VCC
         </div>
-        <div className="rounded-md bg-white/95 px-3 py-1.5 text-center text-[9.5px] font-semibold text-charcoal">
+        <div className="rounded-[6px] bg-white/95 px-3 py-1.5 text-center text-[9.5px] font-medium text-charcoal">
           Enviar mensaje
         </div>
       </div>
@@ -1345,5 +1314,5 @@ function WhatsIcon({
 }
 
 function Dot() {
-  return <span className="w-1 h-1 rounded-full bg-brass inline-block" />;
+  return <span className="w-1 h-1 rounded-full bg-brass/70 inline-block" />;
 }
