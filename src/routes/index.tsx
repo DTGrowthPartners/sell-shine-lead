@@ -22,7 +22,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import heroImg from "@/assets/cartagena-hero.jpg";
+import caso1 from "@/assets/caso-abarrotes-1.webp";
+import caso2 from "@/assets/caso-abarrotes-2.webp";
+import caso3 from "@/assets/caso-abarrotes-3.webp";
+import caso4 from "@/assets/caso-abarrotes-4.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -302,6 +313,9 @@ function LandingPage() {
             </a>
             <a href="#showcase" className="nav-item hover:text-brass transition-colors">
               Así se ve
+            </a>
+            <a href="#caso" className="nav-item hover:text-brass transition-colors">
+              Caso real
             </a>
             <a href="#planes" className="nav-item hover:text-brass transition-colors">
               Planes
@@ -651,6 +665,104 @@ function LandingPage() {
                 <div className="mt-4 text-center text-[11px] uppercase tracking-widest text-charcoal/50">
                   Reels
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================= CASO DE ÉXITO ======================= */}
+      <section id="caso" className="relative py-16 md:py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+            <div className="reveal">
+              <div className="inline-flex items-center gap-2 rounded-full border border-brass/50 bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-brass">
+                ★ Caso de éxito real
+              </div>
+              <h2 className="mt-6 font-display font-bold text-3xl md:text-5xl leading-[1.08] tracking-tight text-forest-deep">
+                De 3 meses sin vender{" "}
+                <span className="text-forest/60">
+                  a cerrar la venta en menos de 48 horas.
+                </span>
+              </h2>
+              <p className="mt-5 text-charcoal/60 text-lg leading-relaxed">
+                Tienda de abarrotes esquinera en San Fernando, sector Medellín
+                (Cartagena). Ticket:{" "}
+                <span className="font-semibold text-charcoal">$60.000.000</span>.
+                Creamos la pieza, activamos Meta Ads y llevamos a los
+                interesados directo al WhatsApp del dueño.
+              </p>
+
+              <div className="mt-8 grid grid-cols-2 gap-4">
+                {[
+                  { v: "155", l: "conversaciones por WhatsApp" },
+                  { v: "$334", l: "costo por conversación" },
+                  { v: "$51.796", l: "inversión total en pauta" },
+                  { v: "15.229", l: "impresiones en Meta" },
+                ].map((m) => (
+                  <div
+                    key={m.l}
+                    className="rounded-2xl border border-border bg-card p-5"
+                  >
+                    <div className="font-display font-bold text-2xl md:text-3xl text-forest">
+                      {m.v}
+                    </div>
+                    <div className="mt-1 text-xs text-charcoal/60 leading-snug">
+                      {m.l}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <a
+                href="https://wa.me/573007189383?text=Hola%20VCC%2C%20quiero%20un%20resultado%20como%20el%20de%20la%20tienda%20de%20abarrotes"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-forest px-6 py-3.5 text-sm font-semibold text-ivory hover:bg-forest-deep transition-all hover:scale-[1.02]"
+              >
+                <WhatsIcon />
+                Quiero un resultado así
+              </a>
+            </div>
+
+            <div className="reveal">
+              <Carousel opts={{ loop: true }} className="w-full max-w-md mx-auto">
+                <CarouselContent>
+                  {[
+                    {
+                      src: caso1,
+                      alt: "Caso de éxito VCC: tienda de abarrotes vendida en menos de 48 horas tras 3 meses sin vender",
+                    },
+                    {
+                      src: caso2,
+                      alt: "Así se veía la campaña de la tienda de abarrotes en feed de Facebook, feed de Instagram e historias",
+                    },
+                    {
+                      src: caso3,
+                      alt: "Resultados reales en el administrador de anuncios: 155 conversaciones con $51.796 de inversión",
+                    },
+                    {
+                      src: caso4,
+                      alt: "¿Quieres vender más rápido? Antes: 3 meses intentando vender. Después: vendido en menos de 48 horas",
+                    },
+                  ].map((img, i) => (
+                    <CarouselItem key={i}>
+                      <img
+                        src={img.src}
+                        alt={img.alt}
+                        loading="lazy"
+                        width={1000}
+                        height={1250}
+                        className="w-full rounded-2xl border border-border shadow-[0_24px_60px_-28px_oklch(0.34_0.06_155_/_0.4)]"
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="max-lg:-left-3 border-border bg-card text-forest hover:bg-forest hover:text-ivory" />
+                <CarouselNext className="max-lg:-right-3 border-border bg-card text-forest hover:bg-forest hover:text-ivory" />
+              </Carousel>
+              <div className="mt-4 text-center text-[11px] uppercase tracking-widest text-charcoal/50">
+                Desliza para ver la campaña y los resultados · Capturas reales
               </div>
             </div>
           </div>
