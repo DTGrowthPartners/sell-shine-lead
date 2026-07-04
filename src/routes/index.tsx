@@ -11,6 +11,10 @@ import {
   Music2,
   ChevronUp,
   X,
+  Check,
+  Rocket,
+  Store,
+  Gem,
 } from "lucide-react";
 import {
   Accordion,
@@ -298,6 +302,9 @@ function LandingPage() {
             </a>
             <a href="#showcase" className="nav-item hover:text-brass transition-colors">
               Así se ve
+            </a>
+            <a href="#planes" className="nav-item hover:text-brass transition-colors">
+              Planes
             </a>
             <a href="#proceso" className="nav-item hover:text-brass transition-colors">
               Proceso
@@ -669,6 +676,162 @@ function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================== PLANES ============================ */}
+      <section id="planes" className="relative py-16 md:py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="reveal max-w-2xl mx-auto text-center mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-charcoal/60">
+              Planes VCC
+            </div>
+            <h2 className="mt-6 font-display font-bold text-3xl md:text-5xl leading-[1.08] tracking-tight text-forest-deep">
+              Elige el plan que{" "}
+              <span className="text-forest/60">impulsa tu vitrina.</span>
+            </h2>
+            <p className="mt-4 text-charcoal/60 text-lg">
+              Gestión de pauta para vender o arrendar más rápido.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
+            {/* IMPULSO */}
+            <div className="reveal flex flex-col rounded-2xl border border-border bg-card p-7">
+              <div className="mb-5 grid h-12 w-12 place-items-center rounded-full border border-brass/50 text-brass">
+                <Rocket className="h-5 w-5" strokeWidth={1.6} />
+              </div>
+              <h3 className="font-display font-bold text-xl tracking-tight text-forest-deep uppercase">
+                Impulso
+              </h3>
+              <div className="mt-1.5 pb-4 border-b border-brass/30 text-charcoal/70 text-sm">
+                15 días ·{" "}
+                <span className="font-display font-bold text-lg text-forest-deep">
+                  $300.000
+                </span>
+              </div>
+              <ul className="mt-5 space-y-3 text-sm text-charcoal/70 leading-snug flex-1">
+                {[
+                  "5 imágenes rediseñadas con IA (fotos tomadas por el cliente)",
+                  "1 campaña activa · FB + IG + WhatsApp",
+                  "Estrategia de enfoque y palabras clave",
+                  "CTA directo al WhatsApp del cliente",
+                  "Reporte final",
+                ].map((f) => (
+                  <li key={f} className="flex gap-2.5">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-brass" strokeWidth={2.5} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="https://wa.me/573007189383?text=Hola%20VCC%2C%20me%20interesa%20el%20plan%20Impulso"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-7 inline-flex items-center justify-center gap-2 rounded-full border border-forest/30 px-5 py-3 text-sm font-medium text-forest hover:bg-forest hover:text-ivory transition-colors"
+              >
+                <WhatsIcon size={15} />
+                Empezar con Impulso
+              </a>
+            </div>
+
+            {/* GESTIONADO */}
+            <div className="reveal relative flex flex-col rounded-2xl border-2 border-forest bg-card p-7">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-forest px-3 py-1 text-[10px] uppercase tracking-[0.15em] text-ivory font-medium">
+                Más elegido
+              </div>
+              <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-forest text-ivory">
+                <Store className="h-5 w-5" strokeWidth={1.6} />
+              </div>
+              <h3 className="font-display font-bold text-xl tracking-tight text-forest-deep uppercase">
+                Gestionado
+              </h3>
+              <div className="mt-1.5 pb-4 border-b border-brass/30 text-charcoal/70 text-sm">
+                Mes completo ·{" "}
+                <span className="font-display font-bold text-lg text-forest-deep">
+                  $600.000
+                </span>
+              </div>
+              <ul className="mt-5 space-y-3 text-sm text-charcoal/70 leading-snug flex-1">
+                {[
+                  "Hasta 10 imágenes rediseñadas con IA + 1 video con IA",
+                  "Hasta 2 campañas activas · FB + IG + WhatsApp",
+                  "2-3 scripts de video para que el cliente grabe",
+                  "Estrategia y segmentación definida + palabras clave",
+                  "CTA directo al WhatsApp del cliente",
+                  "Seguimiento semanal + reporte final",
+                ].map((f) => (
+                  <li key={f} className="flex gap-2.5">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-forest" strokeWidth={2.5} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="https://wa.me/573007189383?text=Hola%20VCC%2C%20me%20interesa%20el%20plan%20Gestionado"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-forest px-5 py-3 text-sm font-semibold text-ivory hover:bg-forest-deep transition-colors"
+              >
+                <WhatsIcon size={15} />
+                Empezar con Gestionado
+              </a>
+            </div>
+
+            {/* PREMIUM */}
+            <div className="reveal flex flex-col rounded-2xl border border-brass/60 bg-forest-deep p-7 text-ivory">
+              <div className="mb-5 grid h-12 w-12 place-items-center rounded-full border border-brass text-brass">
+                <Gem className="h-5 w-5" strokeWidth={1.6} />
+              </div>
+              <h3 className="font-display font-bold text-xl tracking-tight text-brass-soft uppercase">
+                Premium
+              </h3>
+              <div className="mt-1.5 pb-4 border-b border-brass/30 text-ivory/70 text-sm">
+                Mes completo ·{" "}
+                <span className="font-display font-bold text-lg text-brass-soft">
+                  $900.000
+                </span>
+              </div>
+              <ul className="mt-5 space-y-3 text-sm text-ivory/80 leading-snug flex-1">
+                {[
+                  "Todo lo de Gestionado",
+                  "Hasta 4 campañas activas · FB + IG + WhatsApp",
+                  "Hasta 6 scripts de contenido para Ads con ángulos de venta",
+                  "Reporte semanal + prioridad en ajustes semanales",
+                  "Dirección de campaña el mes completo",
+                  "Landing de catálogo en vitrinavcc.com con CTA a su WhatsApp",
+                ].map((f) => (
+                  <li key={f} className="flex gap-2.5">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-brass" strokeWidth={2.5} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="https://wa.me/573007189383?text=Hola%20VCC%2C%20me%20interesa%20el%20plan%20Premium"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-brass px-5 py-3 text-sm font-semibold text-forest-deep hover:bg-brass-soft transition-colors"
+              >
+                <WhatsIcon size={15} />
+                Empezar con Premium
+              </a>
+            </div>
+          </div>
+
+          <div className="reveal mt-8 flex flex-col sm:flex-row items-center justify-center gap-x-8 gap-y-2 text-sm text-charcoal/60 text-center">
+            <span>
+              El presupuesto de pauta lo pone el cliente ·{" "}
+              <span className="font-medium text-charcoal">
+                VCC cobra la gestión.
+              </span>
+            </span>
+            <span className="hidden sm:inline w-1 h-1 rounded-full bg-brass" />
+            <span>
+              Tú gestionas tus leads directo en WhatsApp ·{" "}
+              <span className="font-medium text-charcoal">300 718 9383</span>
+            </span>
           </div>
         </div>
       </section>
