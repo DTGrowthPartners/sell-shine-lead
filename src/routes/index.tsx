@@ -15,6 +15,8 @@ import {
   Rocket,
   Store,
   Gem,
+  ThumbsUp,
+  Share2,
 } from "lucide-react";
 import {
   Accordion,
@@ -44,9 +46,6 @@ gsap.registerPlugin(ScrollTrigger);
 const WHATSAPP =
   "https://wa.me/573007189383?text=Hola%20VCC%2C%20quiero%20anunciar%20mi%20propiedad";
 
-const HERO_VIDEO =
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260403_050628_c4e32401-fab4-4a27-b7a8-6e9291cd5959.mp4";
-
 export const Route = createFileRoute("/")({
   component: LandingPage,
 });
@@ -57,10 +56,20 @@ export const Route = createFileRoute("/")({
 function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
+  const [src, setSrc] = useState<string | null>(null);
+
+  // Video vertical en móvil, horizontal en pantallas grandes
+  useEffect(() => {
+    setSrc(
+      window.matchMedia("(max-width: 767px)").matches
+        ? "/hero-movil.mp4"
+        : "/hero-horizontal.mp4",
+    );
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !src) return;
 
     const FADE = 0.5;
     let raf = 0;
@@ -97,7 +106,7 @@ function HeroVideo() {
       cancelAnimationFrame(raf);
       video.removeEventListener("ended", onEnded);
     };
-  }, []);
+  }, [src]);
 
   return (
     <div className="absolute inset-0" aria-hidden>
@@ -108,10 +117,10 @@ function HeroVideo() {
         width={1920}
         height={1080}
       />
-      {!failed && (
+      {src && !failed && (
         <video
           ref={videoRef}
-          src={HERO_VIDEO}
+          src={src}
           className="absolute inset-0 h-full w-full object-cover"
           style={{ opacity: 0 }}
           muted
@@ -644,7 +653,7 @@ function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.12em]">
+              <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em]">
                 <span className="rounded-[6px] bg-forest text-ivory px-3 py-1.5">
                   Feed
                 </span>
@@ -654,34 +663,32 @@ function LandingPage() {
                 <span className="rounded-[6px] bg-ivory-warm/70 text-charcoal/60 px-3 py-1.5">
                   Reels
                 </span>
+                <span className="rounded-[6px] bg-ivory-warm/70 text-charcoal/60 px-3 py-1.5">
+                  WhatsApp
+                </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 lg:gap-14 max-w-3xl mx-auto">
-              <div className="preview-card">
-                <PhoneFrame>
-                  <FeedPreview />
-                </PhoneFrame>
-                <div className="mt-5 text-center text-[10px] uppercase tracking-[0.15em] text-charcoal/50">
-                  Feed de Instagram
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-12">
+              {[
+                { c: <FacebookPreview />, l: "Feed de Facebook" },
+                { c: <FeedPreview />, l: "Feed de Instagram" },
+                { c: <StoryPreview />, l: "Historias" },
+                { c: <ReelPreview />, l: "Reels" },
+                { c: <WhatsAppPreview />, l: "Tu WhatsApp" },
+              ].map((p) => (
+                <div key={p.l} className="preview-card">
+                  <PhoneFrame>{p.c}</PhoneFrame>
+                  <div className="mt-5 text-center text-[10px] uppercase tracking-[0.15em] text-charcoal/50">
+                    {p.l}
+                  </div>
                 </div>
-              </div>
-              <div className="preview-card">
-                <PhoneFrame>
-                  <StoryPreview />
-                </PhoneFrame>
-                <div className="mt-5 text-center text-[10px] uppercase tracking-[0.15em] text-charcoal/50">
-                  Historias
-                </div>
-              </div>
-              <div className="preview-card">
-                <PhoneFrame>
-                  <ReelPreview />
-                </PhoneFrame>
-                <div className="mt-5 text-center text-[10px] uppercase tracking-[0.15em] text-charcoal/50">
-                  Reels
-                </div>
-              </div>
+              ))}
+            </div>
+
+            <div className="mt-12 pt-6 border-t border-border text-center text-sm font-light text-charcoal/55">
+              Cada anuncio termina donde importa:{" "}
+              <span className="text-charcoal">tu WhatsApp.</span>
             </div>
           </div>
         </div>
@@ -969,39 +976,56 @@ function LandingPage() {
             </p>
           </div>
 
-          <div className="process-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-12">
-            {[
-              {
-                n: "01",
-                t: "Nos escribes",
-                d: "Cuéntanos por WhatsApp qué necesitas vender o arrendar.",
-              },
-              {
-                n: "02",
-                t: "Montamos la campaña",
-                d: "Creativos, copy y segmentación pensados para Cartagena.",
-              },
-              {
-                n: "03",
-                t: "Corre la pauta",
-                d: "Lanzamos en Meta Ads y optimizamos día a día.",
-              },
-              {
-                n: "04",
-                t: "Tú cierras",
-                d: "Los interesados te escriben directo por WhatsApp.",
-              },
-            ].map((s) => (
-              <div key={s.n} className="step-card border-t border-charcoal/20 pt-7">
-                <span className="font-display italic text-2xl text-brass">
-                  {s.n}
-                </span>
-                <h3 className="mt-5 text-lg font-medium text-charcoal">{s.t}</h3>
-                <p className="mt-3 text-[15px] font-light text-charcoal/60 leading-relaxed">
-                  {s.d}
-                </p>
-              </div>
-            ))}
+          <div className="relative">
+            {/* Línea de tiempo: vertical en móvil, horizontal en desktop */}
+            <div className="lg:hidden absolute left-[5px] top-2 bottom-2 w-px bg-charcoal/15" />
+            <div className="hidden lg:block absolute top-[5px] inset-x-0 h-px bg-charcoal/15" />
+
+            <div className="grid lg:grid-cols-4 gap-x-10 gap-y-14">
+              {[
+                {
+                  n: "01",
+                  t: "Nos escribes",
+                  d: "Cuéntanos por WhatsApp qué necesitas vender o arrendar.",
+                  m: "Día 0",
+                },
+                {
+                  n: "02",
+                  t: "Montamos la campaña",
+                  d: "Creativos, copy y segmentación pensados para Cartagena.",
+                  m: "Día 1",
+                },
+                {
+                  n: "03",
+                  t: "Corre la pauta",
+                  d: "Lanzamos en Meta Ads y optimizamos día a día.",
+                  m: "Desde el día 2",
+                },
+                {
+                  n: "04",
+                  t: "Tú cierras",
+                  d: "Los interesados te escriben directo por WhatsApp.",
+                  m: "Cada interesado, en tu chat",
+                },
+              ].map((s) => (
+                <div key={s.n} className="step-card relative pl-10 lg:pl-0 lg:pt-10">
+                  {/* Nodo sobre la línea */}
+                  <span className="absolute left-0 top-1.5 lg:top-0 h-[11px] w-[11px] rounded-full border border-brass bg-ivory" />
+                  <div className="text-[10px] uppercase tracking-[0.15em] text-brass">
+                    {s.m}
+                  </div>
+                  <div className="mt-3 font-display italic text-2xl text-charcoal/30">
+                    {s.n}
+                  </div>
+                  <h3 className="mt-3 text-lg font-medium text-charcoal">
+                    {s.t}
+                  </h3>
+                  <p className="mt-3 text-[15px] font-light text-charcoal/60 leading-relaxed">
+                    {s.d}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1158,6 +1182,117 @@ function AdAvatar({ size = "h-6 w-6" }: { size?: string }) {
     >
       V
     </span>
+  );
+}
+
+function FacebookPreview() {
+  return (
+    <div className="absolute inset-0 bg-ivory flex flex-col">
+      <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
+        <span className="text-[14px] font-bold tracking-tight text-[#1877F2]">
+          facebook
+        </span>
+        <div className="flex items-center gap-2.5 text-charcoal">
+          <MessageCircle className="h-3.5 w-3.5" strokeWidth={1.6} />
+          <MoreHorizontal className="h-3.5 w-3.5" strokeWidth={1.6} />
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 px-2.5 pb-1">
+        <AdAvatar />
+        <div className="leading-tight">
+          <div className="text-[10px] font-medium text-charcoal">
+            Vitrina Comercial Cartagena
+          </div>
+          <div className="text-[8px] text-charcoal/50">Publicidad · 🌎</div>
+        </div>
+        <MoreHorizontal className="ml-auto h-3.5 w-3.5 text-charcoal/60" />
+      </div>
+      <p className="px-2.5 pb-1.5 text-[8.5px] text-charcoal/80 leading-snug">
+        Se vende casa colonial en el Centro Histórico. Interesados por
+        WhatsApp.
+      </p>
+      <div className="relative flex-1 min-h-0 overflow-hidden">
+        <img
+          src={heroImg}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      </div>
+      <div className="flex items-center justify-between gap-2 bg-ivory-warm/70 px-2.5 py-1.5">
+        <div className="leading-tight min-w-0">
+          <div className="text-[7.5px] text-charcoal/50">api.whatsapp.com</div>
+          <div className="text-[9px] font-medium text-charcoal truncate">
+            Casa colonial en venta
+          </div>
+        </div>
+        <span className="shrink-0 rounded-[5px] bg-forest text-ivory text-[8.5px] px-2.5 py-1">
+          WhatsApp
+        </span>
+      </div>
+      <div className="flex items-center justify-around px-2 py-1.5 text-[8px] text-charcoal/65 border-t border-charcoal/10">
+        <span className="flex items-center gap-1">
+          <ThumbsUp className="h-3 w-3" strokeWidth={1.6} /> Me gusta
+        </span>
+        <span className="flex items-center gap-1">
+          <MessageCircle className="h-3 w-3" strokeWidth={1.6} /> Comentar
+        </span>
+        <span className="flex items-center gap-1">
+          <Share2 className="h-3 w-3" strokeWidth={1.6} /> Compartir
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function WhatsAppPreview() {
+  return (
+    <div className="absolute inset-0 bg-[#EFE7DC] flex flex-col">
+      <div className="flex items-center gap-2 bg-forest px-2.5 pt-3.5 pb-2 text-ivory">
+        <span aria-hidden className="text-[13px] leading-none">
+          ‹
+        </span>
+        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ivory-warm text-forest text-[9px] font-medium">
+          C
+        </span>
+        <div className="flex-1 leading-tight min-w-0">
+          <div className="text-[10px] font-medium truncate">Carlos M.</div>
+          <div className="text-[8px] text-ivory/70">en línea</div>
+        </div>
+        <MoreHorizontal className="h-3.5 w-3.5" />
+      </div>
+      <div className="mx-auto mt-2.5 rounded-[6px] bg-ivory/90 px-2 py-1 text-[7.5px] text-charcoal/60">
+        Lead desde tu anuncio en Meta
+      </div>
+      <div className="flex-1 flex flex-col px-2.5 pt-2.5 gap-1.5 overflow-hidden">
+        <div className="max-w-[88%] self-start rounded-[8px] rounded-tl-[2px] bg-white p-2 text-[9px] text-charcoal leading-snug">
+          Hola, vi el anuncio del local en el Centro Histórico. ¿Sigue
+          disponible?
+          <span className="block text-right text-[7px] text-charcoal/40 mt-0.5">
+            10:24
+          </span>
+        </div>
+        <div className="max-w-[88%] self-start rounded-[8px] bg-white p-2 text-[9px] text-charcoal leading-snug">
+          ¿Se puede visitar mañana en la tarde?
+          <span className="block text-right text-[7px] text-charcoal/40 mt-0.5">
+            10:25
+          </span>
+        </div>
+        <div className="max-w-[88%] self-end rounded-[8px] rounded-tr-[2px] bg-[#DCF8C6] p-2 text-[9px] text-charcoal leading-snug">
+          Claro que sí. ¿Le sirve a las 3 p.m.?
+          <span className="block text-right text-[7px] text-charcoal/40 mt-0.5">
+            10:26 ✓✓
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 p-2">
+        <div className="flex-1 rounded-full bg-white px-3 py-1.5 text-[8.5px] text-charcoal/40">
+          Mensaje
+        </div>
+        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#25D366] text-white">
+          <Send className="h-3 w-3" strokeWidth={1.8} />
+        </span>
+      </div>
+    </div>
   );
 }
 
